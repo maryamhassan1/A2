@@ -5,40 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CO2 Emissions Visualizations</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
-</head>
-<body style="font-family: system-ui; margin: 24px;">
-  <h1 style="margin:0 0 20px 0;">CO₂ emissions visualizations</h1>
+  <style>
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background: linear-gradient(180deg, #f4f1ea 0%, #fbfaf7 100%);
+      color: #171717;
+    }
 
-  <section style="margin-bottom: 40px;">
-    <h2 style="margin:0 0 8px 0;">Global CO₂ emissions are rising</h2>
-    <div style="color:#444; margin-bottom:12px;">
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 24px 48px;
+    }
+
+    h1 {
+      margin: 0 0 28px;
+      text-align: center;
+      font-size: 2.1rem;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    section {
+      padding: 20px 20px 18px;
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    }
+
+    h2 {
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: #4f4a43;
+      margin-bottom: 14px;
+      font-size: 0.98rem;
+      line-height: 1.4;
+    }
+
+    svg {
+      display: block;
+      margin: 0 auto;
+      overflow: visible;
+    }
+  </style>
+</head>
+<body>
+  <main>
+  <h1>CO₂ emissions visualizations</h1>
+
+  <section>
+    <h2>Global CO₂ emissions are rising</h2>
+    <div class="subtitle">
       Source: IMF Climate Change Indicators — CO2 emissions (sum across countries & industries)
     </div>
     <svg id="global-chart" width="900" height="480"></svg>
   </section>
 
   <section>
-    <h2 style="margin:0 0 8px 0;">CO₂ emissions are not rising (in major economies)</h2>
-    <div style="color:#444; margin-bottom:12px;">
-      Filter: USA, GBR, DEU, FRA, ITA, JPN • Window: 2005–2018 • Index: 2005 = 100
+    <h2>Carbon emissions of the largest countries across Europe</h2>
+    <div class="subtitle">
+      Largest European countries by population • Window: 2006–2018 • Indexed to 2006 = 100
     </div>
-    <svg id="indexed-chart" width="900" height="520"></svg>
+    <svg id="europe-chart" width="900" height="520"></svg>
   </section>
-
-  <section style="margin-top: 40px;">
-    <h2 style="margin:0 0 8px 0;">By country with interactive start year</h2>
-    <div style="color:#444; margin-bottom:12px;">
-      Choose a baseline year to see how the same selected countries look when indexed from a different starting point.
-    </div>
-    <label for="start-year-select" style="display:inline-block; margin-bottom:12px; font-weight:600;">
-      Start year:
-    </label>
-    <select id="start-year-select" style="margin-left:8px; padding:4px 8px; font:inherit;"></select>
-    <svg id="interactive-country-chart" width="900" height="520"></svg>
-  </section>
+  </main>
 
   <script src="js/global.js"></script>
-  <script src="js/by-country.js"></script>
-  <script src="js/by-country-interactive.js"></script>
+  <script src="js/europe.js"></script>
 </body>
 </html>
