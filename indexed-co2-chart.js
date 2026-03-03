@@ -72,7 +72,7 @@
     .nice()
     .range([height - margin.bottom, margin.top]);
 
-  const svg = d3.select("#chart");
+  const svg = d3.select("#indexed-chart");
 
   svg
     .append("g")

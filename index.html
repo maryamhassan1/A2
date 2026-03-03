@@ -3,16 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Global CO2 Emissions (Total)</title>
+  <title>CO2 Emissions Visualizations</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body style="font-family: system-ui; margin: 24px;">
-  <h2 style="margin:0 0 8px 0;">Global CO₂ emissions are rising</h2>
-  <div style="color:#444; margin-bottom:12px;">
-    Source: IMF Climate Change Indicators — CO2 emissions (sum across countries & industries)
-  </div>
-  <svg id="chart" width="900" height="480"></svg>
+  <h1 style="margin:0 0 20px 0;">CO₂ emissions visualizations</h1>
+
+  <section style="margin-bottom: 40px;">
+    <h2 style="margin:0 0 8px 0;">Global CO₂ emissions are rising</h2>
+    <div style="color:#444; margin-bottom:12px;">
+      Source: IMF Climate Change Indicators — CO2 emissions (sum across countries & industries)
+    </div>
+    <svg id="global-chart" width="900" height="480"></svg>
+  </section>
+
+  <section>
+    <h2 style="margin:0 0 8px 0;">CO₂ emissions are not rising (in major economies)</h2>
+    <div style="color:#444; margin-bottom:12px;">
+      Filter: USA, GBR, DEU, FRA, ITA, JPN • Window: 2005–2018 • Index: 2005 = 100
+    </div>
+    <svg id="indexed-chart" width="900" height="520"></svg>
+  </section>
 
   <script src="global-co2-chart.js"></script>
+  <script src="indexed-co2-chart.js"></script>
 </body>
 </html>
