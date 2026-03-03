@@ -1,8 +1,12 @@
 (async function () {
   const width = 900;
   const height = 520;
-  const margin = { top: 20, right: 140, bottom: 45, left: 70 };
+  const margin = { top: 20, right: 170, bottom: 45, left: 70 };
   const selectedISO3 = new Set(["USA", "GBR", "DEU", "FRA", "ITA", "JPN"]);
+  const baseline = 100;
+  const aboveColor = "#2e8b57";
+  const belowColor = "#c43d3d";
+  const neutralColor = "#b8b8b8";
 
   const raw = await d3.csv("data.csv");
   const yearCols = raw.columns.filter((column) => /^\d{4}$/.test(column)).map(Number);
@@ -53,12 +57,15 @@
       continue;
     }
 
+    const indexedValues = points.map((point) => ({
+      year: point.year,
+      index: (point.value / base) * 100,
+    }));
+
     series.push({
       iso3,
-      values: points.map((point) => ({
-        year: point.year,
-        index: (point.value / base) * 100,
-      })),
+      values: indexedValues,
+      lastIndex: indexedValues[indexedValues.length - 1].index,
     });
   }
 
@@ -66,9 +73,12 @@
 
   const x = d3.scaleLinear().domain([2005, 2018]).range([margin.left, width - margin.right]);
 
+  const minIndex = d3.min(allPoints, (point) => point.index);
+  const maxIndex = d3.max(allPoints, (point) => point.index);
+
   const y = d3
     .scaleLinear()
-    .domain(d3.extent(allPoints, (point) => point.index))
+    .domain([Math.min(minIndex, baseline), Math.max(maxIndex, baseline)])
     .nice()
     .range([height - margin.bottom, margin.top]);
 
@@ -92,21 +102,96 @@
     .attr("font-weight", 600)
     .text("Index (2005 = 100)");
 
+  svg
+    .append("line")
+    .attr("x1", margin.left)
+    .attr("x2", width - margin.right)
+    .attr("y1", y(baseline))
+    .attr("y2", y(baseline))
+    .attr("stroke", "#999")
+    .attr("stroke-width", 1)
+    .attr("stroke-dasharray", "4 4")
+    .attr("opacity", 0.55);
+
+  svg
+    .append("text")
+    .attr("x", width - margin.right - 8)
+    .attr("y", y(baseline) - 6)
+    .attr("text-anchor", "end")
+    .attr("fill", "#666")
+    .attr("font-size", 11)
+    .text("2005 baseline");
+
   const line = d3
     .line()
     .x((point) => x(point.year))
     .y((point) => y(point.index));
 
+  function getSegmentColor(value) {
+    if (value > baseline) {
+      return aboveColor;
+    }
+    if (value < baseline) {
+      return belowColor;
+    }
+    return neutralColor;
+  }
+
+  function buildSegments(values) {
+    const segments = [];
+
+    for (let index = 0; index < values.length - 1; index += 1) {
+      const start = values[index];
+      const end = values[index + 1];
+      const startDelta = start.index - baseline;
+      const endDelta = end.index - baseline;
+
+      if (startDelta === 0 || endDelta === 0 || startDelta * endDelta > 0) {
+        segments.push({
+          points: [start, end],
+          color: getSegmentColor((start.index + end.index) / 2),
+        });
+        continue;
+      }
+
+      const t = (baseline - start.index) / (end.index - start.index);
+      const crossing = {
+        year: start.year + (end.year - start.year) * t,
+        index: baseline,
+      };
+
+      segments.push({
+        points: [start, crossing],
+        color: getSegmentColor(start.index),
+      });
+      segments.push({
+        points: [crossing, end],
+        color: getSegmentColor(end.index),
+      });
+    }
+
+    return segments;
+  }
+
+  const lineSegments = series.flatMap((entry) =>
+    buildSegments(entry.values).map((segment) => ({
+      iso3: entry.iso3,
+      color: segment.color,
+      points: segment.points,
+    }))
+  );
+
   svg
     .append("g")
     .selectAll("path")
-    .data(series)
+    .data(lineSegments)
     .join("path")
     .attr("fill", "none")
-    .attr("stroke", "black")
-    .attr("stroke-width", 1.6)
-    .attr("opacity", 0.9)
-    .attr("d", (entry) => line(entry.values));
+    .attr("stroke", (entry) => entry.color)
+    .attr("stroke-width", 2.4)
+    .attr("stroke-linecap", "round")
+    .attr("opacity", 0.95)
+    .attr("d", (entry) => line(entry.points));
 
   svg
     .append("g")
@@ -120,5 +205,10 @@
     })
     .attr("dominant-baseline", "middle")
     .attr("font-size", 12)
-    .text((entry) => entry.iso3);
+    .attr("font-weight", 600)
+    .attr("fill", (entry) => getSegmentColor(entry.lastIndex))
+    .text((entry) => {
+      const delta = entry.lastIndex - baseline;
+      return `${entry.iso3} ${delta >= 0 ? "+" : ""}${d3.format(".1f")(delta)}%`;
+    });
 })();

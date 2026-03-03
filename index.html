@@ -25,7 +25,20 @@
     <svg id="indexed-chart" width="900" height="520"></svg>
   </section>
 
+  <section style="margin-top: 40px;">
+    <h2 style="margin:0 0 8px 0;">By country with interactive start year</h2>
+    <div style="color:#444; margin-bottom:12px;">
+      Choose a baseline year to see how the same selected countries look when indexed from a different starting point.
+    </div>
+    <label for="start-year-select" style="display:inline-block; margin-bottom:12px; font-weight:600;">
+      Start year:
+    </label>
+    <select id="start-year-select" style="margin-left:8px; padding:4px 8px; font:inherit;"></select>
+    <svg id="interactive-country-chart" width="900" height="520"></svg>
+  </section>
+
   <script src="js/global.js"></script>
   <script src="js/by-country.js"></script>
+  <script src="js/by-country-interactive.js"></script>
 </body>
 </html>
